@@ -53,8 +53,12 @@ namespace Ya.Taxi
             Console.WriteLine("Building routes...");
             _successfulMovements = new Dictionary<int, string>();
             int bitCapacityNeeded = (_field.Height - 1) + (_field.Width - 1);
-            Int64 rangeCeiling = (Int64)Math.Pow(2, bitCapacityNeeded);
-            for (Int64 i = 0; i < rangeCeiling; i++)
+            Int64 rangeFloor =
+                    Convert.ToInt64(
+                        new StringBuilder().Append('0', (_field.Height + _field.Width - 2) / 2)
+                            .Append('1', (_field.Height + _field.Width - 2) / 2).ToString(), 2),
+                rangeCeiling = (Int64)Math.Pow(2, bitCapacityNeeded);
+            for (Int64 i = rangeFloor; i < rangeCeiling; i++)
             {
                 string movement = FormatRoute(Convert.ToString(i, 2), bitCapacityNeeded);
                 _field.ResetPosition();

@@ -44,7 +44,7 @@ namespace Ya.Taxi
         /// <param name="height">Height of field</param>
         public Field(int width, int height)
         {
-            if (width < _minWidth || height < _minHeight)
+            if (width < _minWidth || height < _minHeight || width > _maxWidth || height > _maxHeight)
             {
                 throw new FieldSizeNotSupportedException($"Attempting to create a ({width},{height}) field. This size is not supported. Changing to valid size...");
             }
@@ -143,7 +143,9 @@ namespace Ya.Taxi
             _minRandomValue = -10,
             _maxRandomValue = 10,
             _minWidth = 2,
-            _minHeight = 2;
+            _maxWidth = 32,
+            _minHeight = 2,
+            _maxHeight = 32;
     }
 
 
