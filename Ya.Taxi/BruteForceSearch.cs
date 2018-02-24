@@ -49,10 +49,12 @@ namespace Ya.Taxi
         private void DoBruteForce()
         {
             _field.ViewField();
-            _movements = GenerateRoutes();
             _succedeedMovements = new Dictionary<int, string>();
-            foreach (string movement in _movements)
+            // MAGIC CONSTANTS!
+            int bitCapacityNeeded = _field.FieldArray.Length / GetDivider(_field.FieldArray.Length);
+            for (int i = 0; i < Math.Pow(2, bitCapacityNeeded); i++)
             {
+                string movement = FormatRoute(Convert.ToString(i, 2), bitCapacityNeeded);
                 _field.ResetPosition();
                 if (TryRoute(movement) && !_succedeedMovements.ContainsKey(RouteNumbersSum(movement)))
                 {
@@ -136,20 +138,6 @@ namespace Ya.Taxi
         }
 
         /// <summary>
-        /// Generate all the routes
-        /// NOTE: considered as slowing function
-        /// </summary>
-        /// <returns></returns>
-        private LinkedList<string> GenerateRoutes()
-        {
-            LinkedList<string> routes = new LinkedList<string>();
-            int bitCapacityNeeded = _field.FieldArray.Length / 2;
-            for (int i = 0; i < Math.Pow(2, bitCapacityNeeded); i++)
-                routes.AddLast(FormatRoute(Convert.ToString(i, 2), bitCapacityNeeded));
-            return routes;
-        }
-
-        /// <summary>
         /// Adds insignificant zeros to the required length
         /// </summary>
         /// <param name="route">source route</param>
@@ -164,6 +152,34 @@ namespace Ya.Taxi
             StringBuilder sb = new StringBuilder();
             sb.Append('0', bitCapacity - route.Length).Append(route);
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// NOTE: TEMPORARY METHOD! NEED TO BE REPLACED WITH SOME MATH EXPRESSION
+        /// </summary>
+        /// <param name="cellCount">Cell count in Field</param>
+        /// <returns>Current Divider</returns>
+        private int GetDivider(int cellCount)
+        {
+            switch (Math.Ceiling(Math.Sqrt(cellCount)))
+            {
+                case 2:
+                    return 1;
+                case 3:
+                case 4:
+                    return 2;
+                case 5:
+                case 6:
+                    return 3;
+                case 7:
+                case 8:
+                    return 4;
+                case 9:
+                case 10:
+                    return 5;
+                default:
+                    return 6;
+            }
         }
 
         private Field _field;

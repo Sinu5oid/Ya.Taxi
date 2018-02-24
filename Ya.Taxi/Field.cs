@@ -119,7 +119,7 @@ namespace Ya.Taxi
             for (int i = 0; i < _fieldArray.GetLength(0); i++)
             {
                 for (int j = 0; j < _fieldArray.GetLength(1); j++)
-                    Console.Write($"{_fieldArray[i, j]}\t");
+                    Console.Write("{0}\t", _fieldArray[i, j].ToString().PadLeft(4));
                 Console.WriteLine();
             }
             Console.WriteLine();
@@ -144,17 +144,19 @@ namespace Ya.Taxi
             return numbers;
         }
 
+        private int[,] _fieldArray;
+
         private int _width,
             _height,
             _xCoord,
             _yCoord,
+            // HARDCODE SECTION
             _minRandomValue = -10,
             _maxRandomValue = 10,
             _minWidth = 2,
-            _maxWidth = 7,
+            _maxWidth = 12,
             _minHeight = 2,
-            _maxHeight = 7;
-        private int[,] _fieldArray;
+            _maxHeight = 12;
     }
 
 
