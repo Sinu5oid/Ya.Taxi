@@ -44,9 +44,9 @@ namespace Ya.Taxi
         /// <param name="height">Height of field</param>
         public Field(int width, int height)
         {
-            if (width < _minWidth || width > _maxWidth || height < _minHeight || width > _maxHeight)
+            if (width < _minWidth || height < _minHeight)
             {
-                throw new FieldSizeNotSupportedException($"Attempting to create a ({width},{height}) field. This size is not supported");
+                throw new FieldSizeNotSupportedException($"Attempting to create a ({width},{height}) field. This size is not supported. Changing to valid size...");
             }
             _width = width;
             _height = height;
@@ -72,31 +72,12 @@ namespace Ya.Taxi
         }
 
         /// <summary>
-        /// Checks if the movement is valid
-        /// </summary>
-        /// <param name="xCoord">Mentioned X coord</param>
-        /// <param name="yCoord">Mentioned Y coord</param>
-        /// <returns>Is the movement is valid</returns>
-        public bool IsValidMovement(int xCoord, int yCoord)
-        {
-            if (xCoord >= _width || xCoord < 0 || yCoord >= _height || yCoord < 0) return false;
-            return true;
-        }
-
-        /// <summary>
         /// Do a movement to coordinates
         /// </summary>
         /// <param name="xCoord">Mentioned X coord</param>
         /// <param name="yCoord">Mentioned Y coord</param>
         public void Move(int xCoord, int yCoord)
         {
-
-            if (!IsValidMovement(xCoord, yCoord))
-            {
-                throw new NotValidMovementException($"Attempting movement from ({_xCoord},{_yCoord}) to ({xCoord},{yCoord}).\nThe movement is not valid");
-            }
-
-            //Console.WriteLine($"Moving from ({_xCoord},{_yCoord}) to ({xCoord},{yCoord})");
             _xCoord = xCoord;
             _yCoord = yCoord;
         }
@@ -119,7 +100,16 @@ namespace Ya.Taxi
             for (int i = 0; i < _fieldArray.GetLength(0); i++)
             {
                 for (int j = 0; j < _fieldArray.GetLength(1); j++)
+                {
+                    if (i == _height - 1 && j == _width - 1)
+                    {
+                        Console.Write("{0}\t", "END".PadLeft(4));
+                        break;
+                    }
+
                     Console.Write("{0}\t", _fieldArray[i, j].ToString().PadLeft(4));
+                }
+
                 Console.WriteLine();
             }
             Console.WriteLine();
@@ -150,13 +140,10 @@ namespace Ya.Taxi
             _height,
             _xCoord,
             _yCoord,
-            // HARDCODE SECTION
             _minRandomValue = -10,
             _maxRandomValue = 10,
             _minWidth = 2,
-            _maxWidth = 12,
-            _minHeight = 2,
-            _maxHeight = 12;
+            _minHeight = 2;
     }
 
 

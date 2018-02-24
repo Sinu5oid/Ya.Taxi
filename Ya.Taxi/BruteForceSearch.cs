@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Ya.Taxi
@@ -11,7 +12,7 @@ namespace Ya.Taxi
         /// </summary>
         public Dictionary<int, string> SuccededMovementDictionary
         {
-            get { return _succedeedMovements; }
+            get { return _successfulMovements; }
         }
 
         /// <summary>
@@ -36,7 +37,7 @@ namespace Ya.Taxi
             }
             catch (FieldSizeNotSupportedException e)
             {
-                Console.WriteLine($"A FieldSizeNotSupportedException is occured in {e.TargetSite}\n{e.Message}\nPlease, set valid size\nThe field will be default-sized on this time\n");
+                Console.WriteLine($"{e.Message}\n");
                 _field = new Field();
             }
 
@@ -49,19 +50,22 @@ namespace Ya.Taxi
         private void DoBruteForce()
         {
             _field.ViewField();
-            _succedeedMovements = new Dictionary<int, string>();
-            // MAGIC CONSTANTS!
-            int bitCapacityNeeded = _field.FieldArray.Length / GetDivider(_field.FieldArray.Length);
-            for (int i = 0; i < Math.Pow(2, bitCapacityNeeded); i++)
+            Console.WriteLine("Building routes...");
+            _successfulMovements = new Dictionary<int, string>();
+            int bitCapacityNeeded = (_field.Height - 1) + (_field.Width - 1);
+            Int64 rangeCeiling = (Int64)Math.Pow(2, bitCapacityNeeded);
+            for (Int64 i = 0; i < rangeCeiling; i++)
             {
                 string movement = FormatRoute(Convert.ToString(i, 2), bitCapacityNeeded);
                 _field.ResetPosition();
-                if (TryRoute(movement) && !_succedeedMovements.ContainsKey(RouteNumbersSum(movement)))
+                int sum;
+                if (IsValidRoute(movement) && !_successfulMovements.ContainsKey(sum = RouteNumbersSum(movement)))
                 {
-                    _succedeedMovements.Add(RouteNumbersSum(movement), movement);
-                    Console.WriteLine($"Success: route found [{movement}] with weight [{RouteNumbersSum(movement)}]");
+                    _successfulMovements.Add(sum, movement);
+                    Console.WriteLine($"Route found [{movement}]" + " with weight [{0}]", sum.ToString().PadLeft(4));
                 }
             }
+            Console.WriteLine("All routes built.");
         }
 
         /// <summary>
@@ -70,46 +74,14 @@ namespace Ya.Taxi
         /// </summary>
         /// <param name="route"></param>
         /// <returns></returns>
-        private bool TryRoute(string route)
+        private bool IsValidRoute(string route)
         {
-            foreach (char c in route)
-            {
-                switch (c)
-                {
-                    case '0':
-                        if (_field.IsValidMovement(_field.XCoord, _field.YCoord + 1))
-                        {
-                            _field.Move(_field.XCoord, _field.YCoord + 1);
-                        }
-                        else
-                        {
-                            return false;
-                        }
-                        break;
-                    case '1':
-                        if (_field.IsValidMovement(_field.XCoord + 1, _field.YCoord))
-                        {
-                            _field.Move(_field.XCoord + 1, _field.YCoord);
-                        }
-                        else
-                        {
-                            return false;
-                        }
-                        break;
-                }
-
-                if (_field.XCoord == _field.Width - 1 && _field.YCoord == _field.Height - 1)
-                {
-                    //Console.WriteLine($"Route:{route}");
-                    return true;
-                }
-            }
-
-            return (_field.XCoord == _field.Width - 1 && _field.YCoord == _field.Height - 1);
+            int enabledBitCount = route.Count(p => p == '1');
+            return (enabledBitCount == _field.Height - 1) && (route.Length - enabledBitCount == _field.Width - 1);
         }
 
         /// <summary>
-        /// Calculate a sum of the route (a significant part without finish point)
+        /// Calculate a sum of the route (without END point)
         /// </summary>
         /// <param name="route">route represented by 0 and 1</param>
         /// <returns></returns>
@@ -124,11 +96,11 @@ namespace Ya.Taxi
                     case '0':
 
                         sum += _field.FieldArray[_field.XCoord, _field.YCoord];
-                        _field.Move(_field.XCoord, _field.YCoord + 1);
+                        _field.Move(_field.XCoord + 0, _field.YCoord);
                         break;
                     case '1':
                         sum += _field.FieldArray[_field.XCoord, _field.YCoord];
-                        _field.Move(_field.XCoord + 1, _field.YCoord);
+                        _field.Move(_field.XCoord, _field.YCoord + 1);
                         break;
                 }
 
@@ -145,45 +117,10 @@ namespace Ya.Taxi
         /// <returns></returns>
         private static string FormatRoute(string route, int bitCapacity)
         {
-            if (!(route.Length < bitCapacity))
-            {
-                return route;
-            }
-            StringBuilder sb = new StringBuilder();
-            sb.Append('0', bitCapacity - route.Length).Append(route);
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// NOTE: TEMPORARY METHOD! NEED TO BE REPLACED WITH SOME MATH EXPRESSION
-        /// </summary>
-        /// <param name="cellCount">Cell count in Field</param>
-        /// <returns>Current Divider</returns>
-        private int GetDivider(int cellCount)
-        {
-            switch (Math.Ceiling(Math.Sqrt(cellCount)))
-            {
-                case 2:
-                    return 1;
-                case 3:
-                case 4:
-                    return 2;
-                case 5:
-                case 6:
-                    return 3;
-                case 7:
-                case 8:
-                    return 4;
-                case 9:
-                case 10:
-                    return 5;
-                default:
-                    return 6;
-            }
+            return (route.Length < bitCapacity) ? new StringBuilder().Append('0', bitCapacity - route.Length).Append(route).ToString() : route;
         }
 
         private Field _field;
-        private LinkedList<string> _movements;
-        private Dictionary<int, string> _succedeedMovements;
+        private Dictionary<int, string> _successfulMovements;
     }
 }

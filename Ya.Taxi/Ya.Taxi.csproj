@@ -45,7 +45,6 @@
     <Compile Include="BruteForceSearch.cs" />
     <Compile Include="Field.cs" />
     <Compile Include="Exceptions\FieldSizeNotSupportedException.cs" />
-    <Compile Include="Exceptions\NotValidMovementExcepton.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
