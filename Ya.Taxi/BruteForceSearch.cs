@@ -72,7 +72,7 @@ namespace Ya.Taxi
                 threads[i].Start(parameters[i]);
             }
             while (threads.Any(t => t.IsAlive))
-                Thread.Sleep(500);
+                Thread.Yield();
             Console.WriteLine("All routes built.");
         }
 
@@ -132,7 +132,7 @@ namespace Ya.Taxi
         /// <returns></returns>
         private bool IsValidRoute(string route)
         {
-            int enabledBitCount = route.AsParallel().Count(p => p == '1');
+            int enabledBitCount = route.Count(p => p == '1');
             return (enabledBitCount == _field.Height - 1) && (route.Length - enabledBitCount == _field.Width - 1);
         }
 
