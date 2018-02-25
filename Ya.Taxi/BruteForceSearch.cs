@@ -57,8 +57,10 @@ namespace Ya.Taxi
                     Convert.ToInt64(
                         new StringBuilder().Append('0', (_field.Height + _field.Width - 2) / 2)
                             .Append('1', (_field.Height + _field.Width - 2) / 2).ToString(), 2),
-                rangeCeiling = (Int64)Math.Pow(2, bitCapacityNeeded);
-            for (Int64 i = rangeFloor; i < rangeCeiling; i++)
+                rangeCeiling = Convert.ToInt64(
+                    new StringBuilder().Append('1', (_field.Height + _field.Width - 2) / 2)
+                        .Append('0', (_field.Height + _field.Width - 2) / 2).ToString(), 2);
+            for (Int64 i = rangeFloor; i <= rangeCeiling; i++)
             {
                 string movement = FormatRoute(Convert.ToString(i, 2), bitCapacityNeeded);
                 _field.ResetPosition();
